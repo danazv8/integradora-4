@@ -2,13 +2,21 @@ using Integradora4.Repositories.Implementations;
 using Integradora4.Repositories.Interfaces;
 using Integradora4.Services.Implementations;
 using Integradora4.Services.Interfaces;
-
-
+using Microsoft.EntityFrameworkCore;
+using Integradora4;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddDbContext<Integradora4Context>(options =>
+    options.UseSqlite(
+        builder.Configuration.GetConnectionString(
+            "ABMProductosDBConnectionString"
+        )
+    )
+);
+
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -21,13 +29,13 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -43,3 +51,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
